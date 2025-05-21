@@ -57,7 +57,8 @@ function fb_initialise() {
   const firebaseGameDB = getDatabase(app);
   console.info(firebaseGameDB);
 }
-
+var currentUser = null;
+var userId = null;
 function fb_authenticate() {console.log('%c fb_authenticate(): ',
   'color: ' + COL_C + '; background-color: ' + COL_B + ';');
   const AUTH = getAuth();
@@ -80,7 +81,8 @@ PROVIDER.setCustomParameters({
 
         //✅ Code for a successful authentication goes here
         console.log("successful authentication")
-        
+        currentUser = result.user;
+        userId = currentUser.uid;
     })
 
     .catch((error) => {
@@ -96,18 +98,22 @@ function fb_write() {
         'color: ' + COL_C + '; background-color: ' + COL_B + ';');
 
         const DB = getDatabase()
-        const dbReference = (DB, "Test/UserData1");
+        if (!currentUser) {
+          alert("You must be logged in to submit the form.")
+          return;
+        }
+        const dbReference = ref(DB, "Test/UID/" + userId);
         var name = document.getElementById("name").value;
         var favoriteFruit = document.getElementById("favoriteFruit").value;
         var fruitQuantity = document.getElementById("fruitQuantity").value;
-        set(dbReference, {name, favoriteFruit, fruitQuantity}).then(() => {
+        set(dbReference, {Name : name, FavoriteFruit : favoriteFruit, FruitQuantity : fruitQuantity}).then(() => {
+   
+          //✅ Code for a successful write goes here
+          console.log("successful write")
+          }).catch((error) => {
     
-            //✅ Code for a successful write goes here
-    console.log("successful write")
-        }).catch((error) => {
-    
-            //❌ Code for a write error goes here
-    console.log("Writing error")
+          //❌ Code for a write error goes here
+          console.log("Writing error")
         });
 
-    }
+}
