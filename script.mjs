@@ -5,8 +5,8 @@
 /**************************************************************/
 const COL_C = 'white';	    // These two const are part of the coloured 	
 const COL_B = '#CD7F32';	//  console.log for functions scheme
-console.log('%c main.mjs', 
-    'color: blue; background-color: white;');
+console.log('%c main.mjs',
+  'color: blue; background-color: white;');
 
 /**************************************************************/
 // Import all external constants & functions required
@@ -19,26 +19,27 @@ import { initializeApp }
   from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getDatabase }
   from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup }
+import { getAuth, GoogleAuthProvider, signInWithPopup }
   from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-  import { onAuthStateChanged }
+import { onAuthStateChanged }
 
-from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+  from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 import { ref, set }
 
-    from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+  from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 
-        import { get }
+import { get }
 
-    from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-    
+  from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
 export {
-fb_initialise,
-fb_authenticate,
-fb_write,
-fb_ReadRec
+  fb_initialise,
+  fb_authenticate,
+  fb_write,
+  fb_ReadRec,
+  fb_email_view
 }
 
 
@@ -64,92 +65,108 @@ function fb_initialise() {
 }
 var currentUser = null;
 var userId = null;
-function fb_authenticate() {console.log('%c fb_authenticate(): ',
-  'color: ' + COL_C + '; background-color: ' + COL_B + ';');
+function fb_authenticate() {
+  console.log('%c fb_authenticate(): ',
+    'color: ' + COL_C + '; background-color: ' + COL_B + ';');
   const AUTH = getAuth();
 
-  
 
 
 
-    const PROVIDER = new GoogleAuthProvider();
 
-    // The following makes Google ask the user to select the account
+  const PROVIDER = new GoogleAuthProvider();
 
-PROVIDER.setCustomParameters({
+  // The following makes Google ask the user to select the account
 
-        prompt: 'select_account'
+  PROVIDER.setCustomParameters({
 
-    });
+    prompt: 'select_account'
 
-    signInWithPopup(AUTH, PROVIDER).then((result) => {
+  });
 
-        //✅ Code for a successful authentication goes here
-        console.log("successful authentication")
-        currentUser = result.user;
-        userId = currentUser.uid;
-       
-    })
+  signInWithPopup(AUTH, PROVIDER).then((result) => {
+
+    //✅ Code for a successful authentication goes here
+    console.log("successful authentication")
+    currentUser = result.user;
+    userId = currentUser.uid;
+
+  })
 
     .catch((error) => {
 
-        //❌ Code for an authentication error goes here
-        console.log("authentication error")
+      //❌ Code for an authentication error goes here
+      console.log("authentication error")
     });
-    
+
 }
 function fb_write() {
 
-      console.log('%c fb_write(): ',
-        'color: ' + COL_C + '; background-color: ' + COL_B + ';');
+  console.log('%c fb_write(): ',
+    'color: ' + COL_C + '; background-color: ' + COL_B + ';');
 
-        
-        if (!currentUser) {
-          alert("You must be logged in to submit the form.")
-          return;
-        }
-        const DB = getDatabase()
-        const dbReference = ref(DB, "Test/UID/" + userId);
-        var name = document.getElementById("name").value;
-        var favoriteFruit = document.getElementById("favoriteFruit").value;
-        var fruitQuantity = document.getElementById("fruitQuantity").value;
-        set(dbReference, {Name : name, FavoriteFruit : favoriteFruit, FruitQuantity : fruitQuantity}).then(() => {
-   
-          //✅ Code for a successful write goes here
-          console.log("successful write")
-          }).catch((error) => {
-    
-          //❌ Code for a write error goes here
-          console.log("Writing error")
-        });
+
+  if (!currentUser) {
+    alert("You must be logged in to submit the form.")
+    return;
+  }
+  const DB = getDatabase()
+  const dbReference = ref(DB, "Test/UID/" + userId);
+  var name = document.getElementById("name").value;
+  var favoriteFruit = document.getElementById("favoriteFruit").value;
+  var fruitQuantity = document.getElementById("fruitQuantity").value;
+  set(dbReference, { Name: name, FavoriteFruit: favoriteFruit, FruitQuantity: fruitQuantity }).then(() => {
+
+    //✅ Code for a successful write goes here
+    console.log("successful write")
+  }).catch((error) => {
+
+    //❌ Code for a write error goes here
+    console.log("Writing error")
+  });
 
 }
 
 function fb_ReadRec() {
-      console.log('%c fb_ReadRec(): ',
-      'color: ' + COL_C + '; background-color: ' + COL_B + ';');
-      const DB = getDatabase()
-      const dbReference= ref(DB, "Test/UID/" + userId);
+  console.log('%c fb_ReadRec(): ',
+    'color: ' + COL_C + '; background-color: ' + COL_B + ';');
+  const DB = getDatabase()
+  const dbReference = ref(DB, "Test/UID/" + userId);
 
-    get(dbReference).then((snapshot) => {
+  get(dbReference).then((snapshot) => {
+    var fb_data = snapshot.val();
+    if (fb_data != null) {
 
-        var fb_data = snapshot.val();
+      //✅ Code for a successful read goes here
+      console.log("successful read")
+      console.log(fb_data)
+    } else {
 
-        if (fb_data != null) {
+      //✅ Code for no record found goes here
+      console.log("no record found")
+    }
+  }).catch((error) => {
+    //❌ Code for a read error goes here
+    console.log("read error")
+    console.log(error)
+  });
+}
 
-            //✅ Code for a successful read goes here
-console.log("successful read")
-console.log(fb_data)
-        } else {
 
-            //✅ Code for no record found goes here
-console.log("no record found")
-        }
-
-    }).catch((error) => {
-
-        //❌ Code for a read error goes here
-console.log("read error")
-console.log(error)
-    });
-  }
+function fb_email_view(){
+    if(!currentUser){
+        alert("You must be logged in to view email.");
+    }
+    else{
+        //calls read and waits for promise to return before changing email text
+        fb_read().then((fb_data) => {
+            emailTemplate = `
+                <div style="background: #fff0f5; border: 1px solid #ccc; padding: 1rem; border-radius: 8px;">
+                 <p>hello</p>   
+                </div>`
+            document.getElementById("emailOutput").innerHTML = emailTemplate;
+        }).catch((error) => {
+            console.log("error")
+        });
+      }
+    }
