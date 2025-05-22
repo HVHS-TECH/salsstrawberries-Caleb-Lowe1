@@ -30,11 +30,16 @@ import { ref, set }
     from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 
+        import { get }
+
+    from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
     
 export {
 fb_initialise,
 fb_authenticate,
-fb_write}
+fb_write,
+fb_ReadRec
+}
 
 
 
@@ -83,6 +88,7 @@ PROVIDER.setCustomParameters({
         console.log("successful authentication")
         currentUser = result.user;
         userId = currentUser.uid;
+       
     })
 
     .catch((error) => {
@@ -97,11 +103,12 @@ function fb_write() {
       console.log('%c fb_write(): ',
         'color: ' + COL_C + '; background-color: ' + COL_B + ';');
 
-        const DB = getDatabase()
+        
         if (!currentUser) {
           alert("You must be logged in to submit the form.")
           return;
         }
+        const DB = getDatabase()
         const dbReference = ref(DB, "Test/UID/" + userId);
         var name = document.getElementById("name").value;
         var favoriteFruit = document.getElementById("favoriteFruit").value;
@@ -117,3 +124,32 @@ function fb_write() {
         });
 
 }
+
+function fb_ReadRec() {
+      console.log('%c fb_ReadRec(): ',
+      'color: ' + COL_C + '; background-color: ' + COL_B + ';');
+      const DB = getDatabase()
+      const dbReference= ref(DB, "Test/UID/" + userId);
+
+    get(dbReference).then((snapshot) => {
+
+        var fb_data = snapshot.val();
+
+        if (fb_data != null) {
+
+            //✅ Code for a successful read goes here
+console.log("successful read")
+console.log(fb_data)
+        } else {
+
+            //✅ Code for no record found goes here
+console.log("no record found")
+        }
+
+    }).catch((error) => {
+
+        //❌ Code for a read error goes here
+console.log("read error")
+console.log(error)
+    });
+  }

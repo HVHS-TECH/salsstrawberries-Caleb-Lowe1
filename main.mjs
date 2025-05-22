@@ -10,4 +10,8 @@ import { fb_authenticate }
 import { fb_write }
     from './script.mjs';
     window.fb_write   = fb_write;
+
+    import { fb_ReadRec }
+    from './script.mjs';
+    window.fb_ReadRec   = fb_ReadRec;
     
